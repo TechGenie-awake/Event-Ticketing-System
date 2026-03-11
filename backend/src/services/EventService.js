@@ -33,9 +33,10 @@ class EventService {
   async checkAvailability(eventId) {
     const event = await this.eventRepo.findById(eventId);
     if (!event) throw new Error('Event not found');
+    const available = event.seats.filter((s) => s.status === 'AVAILABLE');
     return {
-      available: event.availableSeats > 0,
-      availableSeats: event.availableSeats,
+      available: available.length > 0,
+      availableSeats: available.length,
       seats: event.seats,
     };
   }
