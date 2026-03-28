@@ -61,8 +61,11 @@ class BookingService {
     if (booking.userId !== userId) throw new Error('Unauthorized');
     if (booking.status === 'CANCELLED') throw new Error('Booking already cancelled');
 
-    await this.seatRepo.releaseSeat(booking.seatId);
-    await this.eventRepo.updateAvailableSeats(booking.eventId, -1);
+    // only release seat if it hasn't already been freed
+    if (booking.seat && booking.seat.status !== 'AVAILABLE') {
+      await this.seatRepo.releaseSeat(booking.seatId);
+      await this.eventRepo.updateAvailableSeats(booking.eventId, -1);
+    }
 
     return this.bookingRepo.update(bookingId, { status: 'CANCELLED' });
   }
