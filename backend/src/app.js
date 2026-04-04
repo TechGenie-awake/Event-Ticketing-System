@@ -21,4 +21,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
+
 module.exports = app;
