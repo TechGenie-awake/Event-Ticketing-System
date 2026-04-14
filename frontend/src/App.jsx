@@ -9,8 +9,20 @@ import MyTicketsPage from './pages/MyTicketsPage';
 import TicketViewPage from './pages/TicketViewPage';
 import AdminPage from './pages/AdminPage';
 
+function getUserRole() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.role;
+  } catch {
+    return null;
+  }
+}
+
 function App() {
   const token = localStorage.getItem('token');
+  const role = getUserRole();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -19,23 +31,47 @@ function App() {
 
   return (
     <div>
-      <nav style={{ padding: '1rem 2rem', background: '#1e1b4b', color: 'white', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-        <Link to="/" style={{ color: 'white', fontWeight: 'bold', fontSize: '1.1rem' }}>EventTickets</Link>
-        <Link to="/events" style={{ color: '#c7d2fe' }}>Events</Link>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: '1rem' }}>
+      <nav style={{
+        padding: '1rem 3rem',
+        background: 'rgba(10,10,10,0.95)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid #1a1a1a',
+        display: 'flex',
+        alignItems: 'center',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+      }}>
+        <Link to="/" style={{ color: '#fff', fontWeight: '800', fontSize: '1.2rem', letterSpacing: '-0.5px' }}>
+          EVENT<span style={{ color: '#6366f1' }}>TICKETS</span>
+        </Link>
+
+        <div style={{ display: 'flex', gap: '2rem', marginLeft: '3rem' }}>
+          <Link to="/events" style={{ color: '#a3a3a3', fontSize: '0.85rem', fontWeight: '500', letterSpacing: '0.5px', textTransform: 'uppercase', transition: 'color 0.2s' }}>Events</Link>
+        </div>
+
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
           {token ? (
             <>
-              <Link to="/my-bookings" style={{ color: '#c7d2fe' }}>My Bookings</Link>
-              <Link to="/my-tickets" style={{ color: '#c7d2fe' }}>My Tickets</Link>
-              <Link to="/admin" style={{ color: '#c7d2fe' }}>Admin</Link>
-              <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid #c7d2fe', color: '#c7d2fe', padding: '0.3rem 0.8rem' }}>
+              <Link to="/my-bookings" style={{ color: '#a3a3a3', fontSize: '0.85rem', fontWeight: '500' }}>Bookings</Link>
+              <Link to="/my-tickets" style={{ color: '#a3a3a3', fontSize: '0.85rem', fontWeight: '500' }}>Tickets</Link>
+              {role === 'ADMIN' && <Link to="/admin" style={{ color: '#6366f1', fontSize: '0.85rem', fontWeight: '600' }}>Admin</Link>}
+              <button onClick={handleLogout} style={{
+                background: 'transparent',
+                border: '1px solid #333',
+                color: '#a3a3a3',
+                padding: '0.4rem 1rem',
+                fontSize: '0.8rem',
+              }}>
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" style={{ color: '#c7d2fe' }}>Login</Link>
-              <Link to="/register" style={{ color: '#c7d2fe' }}>Register</Link>
+              <Link to="/login" style={{ color: '#a3a3a3', fontSize: '0.85rem', fontWeight: '500' }}>Login</Link>
+              <Link to="/register">
+                <button style={{ padding: '0.45rem 1.2rem', fontSize: '0.8rem' }}>Sign Up</button>
+              </Link>
             </>
           )}
         </div>

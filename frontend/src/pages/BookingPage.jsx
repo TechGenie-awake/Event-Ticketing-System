@@ -3,10 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 const SEAT_COLORS = {
-  AVAILABLE: '#bbf7d0',
-  HELD: '#fde68a',
-  BOOKED: '#e5e7eb',
-  SELECTED: '#818cf8',
+  AVAILABLE: '#1a2e1a',
+  HELD: '#2e2a1a',
+  BOOKED: '#1a1a1a',
+  SELECTED: '#312e81',
+};
+
+const SEAT_BORDERS = {
+  AVAILABLE: '#22c55e',
+  HELD: '#f59e0b',
+  BOOKED: '#333',
+  SELECTED: '#6366f1',
 };
 
 function BookingPage() {
@@ -49,91 +56,131 @@ function BookingPage() {
     }
   };
 
-  if (loading) return <p style={{ padding: '2rem' }}>Loading...</p>;
-  if (error && !event) return <p style={{ padding: '2rem', color: 'red' }}>{error}</p>;
+  if (loading) return <p style={{ padding: '3rem', color: '#525252' }}>Loading...</p>;
+  if (error && !event) return <p style={{ padding: '3rem', color: '#ef4444' }}>{error}</p>;
 
   if (booking) {
     return (
-      <div style={{ maxWidth: '500px', margin: '4rem auto', padding: '2rem', background: 'white', borderRadius: '8px', textAlign: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-        <h2 style={{ color: '#16a34a', marginBottom: '1rem' }}>Booking Created!</h2>
-        <p style={{ marginBottom: '0.5rem' }}>Reference: <strong>{booking.bookingReference}</strong></p>
-        <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-          Complete payment within 30 minutes to confirm your seat.
-        </p>
-        <button onClick={() => navigate('/events')} style={{ padding: '0.6rem 1.5rem' }}>
-          Back to Events
-        </button>
+      <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{
+          maxWidth: '450px', padding: '3rem', textAlign: 'center',
+          background: '#141414', borderRadius: '16px', border: '1px solid #1f1f1f',
+        }}>
+          <div style={{ width: '56px', height: '56px', background: '#1a2e1a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '1.5rem' }}>✓</div>
+          <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.5rem' }}>Booking Created</h2>
+          <p style={{ color: '#525252', marginBottom: '1.5rem' }}>Complete payment within 30 minutes to confirm.</p>
+          <div style={{ background: '#0a0a0a', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #1f1f1f' }}>
+            <p style={{ color: '#737373', fontSize: '0.8rem', marginBottom: '0.25rem' }}>Booking Reference</p>
+            <p style={{ color: '#fff', fontWeight: '700', fontSize: '1.1rem', fontFamily: 'monospace' }}>{booking.bookingReference}</p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button onClick={() => navigate('/my-bookings')} style={{ flex: 1, padding: '0.65rem' }}>My Bookings</button>
+            <button onClick={() => navigate('/events')} style={{ flex: 1, padding: '0.65rem', background: '#1f1f1f', color: '#a3a3a3' }}>Back to Events</button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // Group seats by row for display
   const rows = [...new Set(seats.map((s) => s.row))].sort();
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ padding: '3rem', maxWidth: '900px', margin: '0 auto' }}>
       {event && (
         <>
-          <h2>{event.title}</h2>
-          <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
-            {new Date(event.eventDate).toDateString()} • {event.venue}, {event.city}
-          </p>
-
-          <h3 style={{ marginBottom: '1rem' }}>Select a Seat</h3>
-
-          <div style={{ background: '#1e1b4b', color: 'white', textAlign: 'center', padding: '0.5rem', borderRadius: '4px', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
-            STAGE / SCREEN
+          <div style={{ marginBottom: '2rem' }}>
+            <p style={{ color: '#6366f1', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>SELECT YOUR SEAT</p>
+            <h1 style={{ color: '#fff', fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.5px', marginBottom: '0.5rem' }}>{event.title}</h1>
+            <p style={{ color: '#525252', fontSize: '0.9rem' }}>
+              {new Date(event.eventDate).toDateString()} • {event.eventTime} • {event.venue}, {event.city}
+            </p>
           </div>
 
-          {rows.map((row) => (
-            <div key={row} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
-              <span style={{ width: '20px', fontSize: '0.8rem', color: '#6b7280', fontWeight: 'bold' }}>{row}</span>
-              {seats
-                .filter((s) => s.row === row)
-                .sort((a, b) => a.number - b.number)
-                .map((seat) => (
-                  <div
-                    key={seat.id}
-                    onClick={() => handleSeatClick(seat)}
-                    title={`${seat.row}${seat.number} - ${seat.section} - $${seat.price}`}
-                    style={{
-                      width: '36px',
-                      height: '36px',
-                      background: selectedSeat?.id === seat.id ? SEAT_COLORS.SELECTED : SEAT_COLORS[seat.status],
-                      borderRadius: '4px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: seat.status === 'AVAILABLE' ? 'pointer' : 'not-allowed',
-                      fontSize: '0.65rem',
-                      fontWeight: '600',
-                      border: selectedSeat?.id === seat.id ? '2px solid #4f46e5' : '1px solid #d1d5db',
-                      transition: 'transform 0.1s',
-                    }}
-                    onMouseEnter={(e) => { if (seat.status === 'AVAILABLE') e.target.style.transform = 'scale(1.1)'; }}
-                    onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; }}
-                  >
-                    {seat.number}
-                  </div>
-                ))}
-            </div>
-          ))}
-
-          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1.5rem', fontSize: '0.85rem' }}>
-            <span><span style={{ display: 'inline-block', width: '14px', height: '14px', background: SEAT_COLORS.AVAILABLE, borderRadius: '2px', marginRight: '4px' }}></span>Available</span>
-            <span><span style={{ display: 'inline-block', width: '14px', height: '14px', background: SEAT_COLORS.SELECTED, borderRadius: '2px', marginRight: '4px' }}></span>Selected</span>
-            <span><span style={{ display: 'inline-block', width: '14px', height: '14px', background: SEAT_COLORS.HELD, borderRadius: '2px', marginRight: '4px' }}></span>Held</span>
-            <span><span style={{ display: 'inline-block', width: '14px', height: '14px', background: SEAT_COLORS.BOOKED, borderRadius: '2px', marginRight: '4px' }}></span>Booked</span>
+          {/* Stage */}
+          <div style={{
+            background: 'linear-gradient(180deg, #1e1b4b, #0f0e26)',
+            color: '#818cf8', textAlign: 'center', padding: '0.6rem',
+            borderRadius: '8px 8px 0 0', fontSize: '0.75rem', fontWeight: '600',
+            letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '2rem',
+          }}>
+            STAGE
           </div>
 
-          {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+          {/* Seats */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'center' }}>
+            {rows.map((row) => (
+              <div key={row} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ width: '22px', fontSize: '0.75rem', color: '#404040', fontWeight: '700', textAlign: 'center' }}>{row}</span>
+                {seats
+                  .filter((s) => s.row === row)
+                  .sort((a, b) => a.number - b.number)
+                  .map((seat) => {
+                    const isSelected = selectedSeat?.id === seat.id;
+                    const status = isSelected ? 'SELECTED' : seat.status;
+                    return (
+                      <div
+                        key={seat.id}
+                        onClick={() => handleSeatClick(seat)}
+                        title={`${seat.row}${seat.number} • ${seat.section} • $${seat.price}`}
+                        style={{
+                          width: '38px', height: '34px',
+                          background: SEAT_COLORS[status],
+                          border: `1.5px solid ${SEAT_BORDERS[status]}`,
+                          borderRadius: '5px 5px 8px 8px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          cursor: seat.status === 'AVAILABLE' ? 'pointer' : 'not-allowed',
+                          fontSize: '0.65rem', fontWeight: '600',
+                          color: isSelected ? '#818cf8' : seat.status === 'AVAILABLE' ? '#4ade80' : '#404040',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        {seat.number}
+                      </div>
+                    );
+                  })}
+              </div>
+            ))}
+          </div>
 
+          {/* Legend */}
+          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', marginTop: '2rem', fontSize: '0.8rem', color: '#525252' }}>
+            {[
+              { color: SEAT_BORDERS.AVAILABLE, label: 'Available' },
+              { color: SEAT_BORDERS.SELECTED, label: 'Selected' },
+              { color: SEAT_BORDERS.HELD, label: 'Held' },
+              { color: SEAT_BORDERS.BOOKED, label: 'Booked' },
+            ].map((item) => (
+              <span key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ width: '10px', height: '10px', background: item.color, borderRadius: '2px', display: 'inline-block' }} />
+                {item.label}
+              </span>
+            ))}
+          </div>
+
+          {error && <p style={{ color: '#ef4444', textAlign: 'center', marginTop: '1rem' }}>{error}</p>}
+
+          {/* Selection Panel */}
           {selectedSeat && (
-            <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'white', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-              <p>Seat: <strong>{selectedSeat.row}{selectedSeat.number}</strong> | Section: {selectedSeat.section} | Price: <strong>${selectedSeat.price}</strong></p>
-              <button onClick={handleBooking} disabled={submitting} style={{ marginTop: '0.75rem', padding: '0.6rem 1.5rem' }}>
-                {submitting ? 'Booking...' : 'Confirm Booking'}
-              </button>
+            <div style={{
+              marginTop: '2rem', padding: '1.25rem', background: '#141414',
+              borderRadius: '12px', border: '1px solid #312e81',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            }}>
+              <div>
+                <p style={{ color: '#818cf8', fontSize: '0.7rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.3rem' }}>SELECTED SEAT</p>
+                <p style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '700' }}>
+                  {selectedSeat.row}{selectedSeat.number}
+                  <span style={{ color: '#525252', fontWeight: '400', fontSize: '0.85rem', marginLeft: '0.75rem' }}>
+                    {selectedSeat.section} Section
+                  </span>
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: '800' }}>${selectedSeat.price}</p>
+                <button onClick={handleBooking} disabled={submitting} style={{ padding: '0.65rem 1.75rem', fontSize: '0.9rem', fontWeight: '600' }}>
+                  {submitting ? 'Booking...' : 'Book Now'}
+                </button>
+              </div>
             </div>
           )}
         </>

@@ -26,37 +26,38 @@ function LoginPage() {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem', background: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-      <h2 style={{ marginBottom: '1.5rem' }}>Login</h2>
-      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.75rem' }}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      <p style={{ marginTop: '1rem', textAlign: 'center', color: '#666' }}>
-        Don't have an account? <Link to="/register" style={{ color: '#4f46e5' }}>Register</Link>
-      </p>
+    <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+      <div style={{
+        width: '100%', maxWidth: '400px', padding: '2.5rem',
+        background: '#141414', borderRadius: '16px', border: '1px solid #1f1f1f',
+      }}>
+        <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.5rem' }}>Welcome back</h2>
+        <p style={{ color: '#525252', fontSize: '0.85rem', marginBottom: '2rem' }}>Sign in to your account</p>
+
+        {error && (
+          <div style={{ background: '#1c1017', border: '1px solid #3b1323', color: '#ef4444', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', color: '#737373', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.4rem' }}>Email</label>
+            <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="you@example.com" />
+          </div>
+          <div style={{ marginBottom: '1.75rem' }}>
+            <label style={{ display: 'block', color: '#737373', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.4rem' }}>Password</label>
+            <input name="password" type="password" value={form.password} onChange={handleChange} required placeholder="••••••••" />
+          </div>
+          <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', fontWeight: '600' }}>
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+
+        <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#525252', fontSize: '0.85rem' }}>
+          Don't have an account? <Link to="/register" style={{ color: '#6366f1', fontWeight: '500' }}>Sign up</Link>
+        </p>
+      </div>
     </div>
   );
 }

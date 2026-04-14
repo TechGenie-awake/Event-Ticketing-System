@@ -25,35 +25,51 @@ function RegisterPage() {
     }
   };
 
+  const fields = [
+    { name: 'name', type: 'text', label: 'Full Name', placeholder: 'John Doe', required: true },
+    { name: 'email', type: 'email', label: 'Email', placeholder: 'you@example.com', required: true },
+    { name: 'phone', type: 'tel', label: 'Phone (optional)', placeholder: '+91 9876543210', required: false },
+    { name: 'password', type: 'password', label: 'Password', placeholder: '••••••••', required: true },
+  ];
+
   return (
-    <div style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem', background: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-      <h2 style={{ marginBottom: '1.5rem' }}>Create Account</h2>
-      {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        {[
-          { name: 'name', type: 'text', placeholder: 'Full Name', required: true },
-          { name: 'email', type: 'email', placeholder: 'Email', required: true },
-          { name: 'phone', type: 'tel', placeholder: 'Phone (optional)', required: false },
-          { name: 'password', type: 'password', placeholder: 'Password', required: true },
-        ].map((field) => (
-          <div key={field.name} style={{ marginBottom: '1rem' }}>
-            <input
-              name={field.name}
-              type={field.type}
-              placeholder={field.placeholder}
-              value={form[field.name]}
-              onChange={handleChange}
-              required={field.required}
-            />
+    <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+      <div style={{
+        width: '100%', maxWidth: '400px', padding: '2.5rem',
+        background: '#141414', borderRadius: '16px', border: '1px solid #1f1f1f',
+      }}>
+        <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.5rem' }}>Create account</h2>
+        <p style={{ color: '#525252', fontSize: '0.85rem', marginBottom: '2rem' }}>Get started with EventTickets</p>
+
+        {error && (
+          <div style={{ background: '#1c1017', border: '1px solid #3b1323', color: '#ef4444', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+            {error}
           </div>
-        ))}
-        <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.75rem', marginTop: '0.5rem' }}>
-          {loading ? 'Creating account...' : 'Register'}
-        </button>
-      </form>
-      <p style={{ marginTop: '1rem', textAlign: 'center', color: '#666' }}>
-        Already have an account? <Link to="/login" style={{ color: '#4f46e5' }}>Login</Link>
-      </p>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          {fields.map((field) => (
+            <div key={field.name} style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', color: '#737373', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.4rem' }}>{field.label}</label>
+              <input
+                name={field.name}
+                type={field.type}
+                placeholder={field.placeholder}
+                value={form[field.name]}
+                onChange={handleChange}
+                required={field.required}
+              />
+            </div>
+          ))}
+          <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', fontWeight: '600', marginTop: '0.75rem' }}>
+            {loading ? 'Creating account...' : 'Create Account'}
+          </button>
+        </form>
+
+        <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#525252', fontSize: '0.85rem' }}>
+          Already have an account? <Link to="/login" style={{ color: '#6366f1', fontWeight: '500' }}>Sign in</Link>
+        </p>
+      </div>
     </div>
   );
 }
