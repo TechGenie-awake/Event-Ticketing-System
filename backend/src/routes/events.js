@@ -11,6 +11,7 @@ router.get('/:id/availability', ctrl.checkAvailability);
 
 router.post('/', authenticate, authorize('ADMIN'), ctrl.createEvent);
 router.put('/:id', authenticate, authorize('ADMIN'), ctrl.updateEvent);
+router.post('/:id/seats', authenticate, authorize('ADMIN'), ctrl.addSeats);
 router.delete('/:id', authenticate, authorize('ADMIN'), ctrl.deleteEvent);
 
 module.exports = router;

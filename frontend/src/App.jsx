@@ -6,6 +6,8 @@ import EventsPage from './pages/EventsPage';
 import BookingPage from './pages/BookingPage';
 import MyBookingsPage from './pages/MyBookingsPage';
 import MyTicketsPage from './pages/MyTicketsPage';
+import TicketViewPage from './pages/TicketViewPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -25,6 +27,7 @@ function App() {
             <>
               <Link to="/my-bookings" style={{ color: '#c7d2fe' }}>My Bookings</Link>
               <Link to="/my-tickets" style={{ color: '#c7d2fe' }}>My Tickets</Link>
+              <Link to="/admin" style={{ color: '#c7d2fe' }}>Admin</Link>
               <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid #c7d2fe', color: '#c7d2fe', padding: '0.3rem 0.8rem' }}>
                 Logout
               </button>
@@ -46,6 +49,8 @@ function App() {
         <Route path="/booking/:eventId" element={<BookingPage />} />
         <Route path="/my-bookings" element={<MyBookingsPage />} />
         <Route path="/my-tickets" element={<MyTicketsPage />} />
+        <Route path="/ticket/:id" element={<TicketViewPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </div>
   );

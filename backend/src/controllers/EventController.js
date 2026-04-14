@@ -9,6 +9,7 @@ class EventController {
     this.updateEvent = this.updateEvent.bind(this);
     this.deleteEvent = this.deleteEvent.bind(this);
     this.checkAvailability = this.checkAvailability.bind(this);
+    this.addSeats = this.addSeats.bind(this);
   }
 
   async getAllEvents(req, res, next) {
@@ -60,6 +61,14 @@ class EventController {
     try {
       const data = await this.eventService.checkAvailability(req.params.id);
       res.json({ success: true, ...data });
+    } catch (err) {
+      next(err);
+    }
+  }
+  async addSeats(req, res, next) {
+    try {
+      const event = await this.eventService.addSeats(req.params.id, req.body.sections);
+      res.status(201).json({ success: true, event });
     } catch (err) {
       next(err);
     }

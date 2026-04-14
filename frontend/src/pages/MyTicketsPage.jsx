@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
 function MyTicketsPage() {
@@ -56,6 +57,11 @@ function MyTicketsPage() {
                 <p style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '0.3rem' }}>Scan at entry</p>
               </div>
             )}
+          </div>
+          <div style={{ marginTop: '1rem' }}>
+            <Link to={`/ticket/${ticket.id}`}>
+              <button style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}>View / Print Ticket</button>
+            </Link>
           </div>
         </div>
       ))}

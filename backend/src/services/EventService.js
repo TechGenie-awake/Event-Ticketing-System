@@ -1,8 +1,10 @@
 const EventRepository = require('../repositories/EventRepository');
+const SeatRepository = require('../repositories/SeatRepository');
 
 class EventService {
   constructor() {
     this.eventRepo = new EventRepository();
+    this.seatRepo = new SeatRepository();
   }
 
   async getAllEvents(filters) {
@@ -39,6 +41,24 @@ class EventService {
       availableSeats: available.length,
       seats: event.seats,
     };
+  }
+  async addSeats(eventId, sections) {
+    const event = await this.getEventById(eventId);
+    const seats = [];
+    for (const section of sections) {
+      for (const row of section.rows) {
+        for (let num = 1; num <= section.seatsPerRow; num++) {
+          seats.push({ row, number: num, section: section.name, price: section.price });
+        }
+      }
+    }
+    await this.seatRepo.createSeatsForEvent(eventId, seats);
+    const totalNew = seats.length;
+    await this.eventRepo.update(eventId, {
+      totalSeats: event.totalSeats + totalNew,
+      availableSeats: event.availableSeats + totalNew,
+    });
+    return this.eventRepo.findById(eventId);
   }
 }
 
