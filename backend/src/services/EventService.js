@@ -52,8 +52,8 @@ class EventService {
         }
       }
     }
-    await this.seatRepo.createSeatsForEvent(eventId, seats);
-    const totalNew = seats.length;
+    const result = await this.seatRepo.createSeatsForEvent(eventId, seats);
+    const totalNew = result.count;
     await this.eventRepo.update(eventId, {
       totalSeats: event.totalSeats + totalNew,
       availableSeats: event.availableSeats + totalNew,

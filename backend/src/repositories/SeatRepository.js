@@ -51,7 +51,10 @@ class SeatRepository {
   }
 
   async createSeatsForEvent(eventId, seats) {
-    return this.prisma.seat.createMany({ data: seats.map(s => ({ ...s, eventId })) });
+    return this.prisma.seat.createMany({
+      data: seats.map(s => ({ ...s, eventId })),
+      skipDuplicates: true,
+    });
   }
 }
 
