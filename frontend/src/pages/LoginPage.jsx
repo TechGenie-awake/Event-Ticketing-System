@@ -17,6 +17,7 @@ function LoginPage() {
     try {
       const res = await api.post('/auth/login', form);
       localStorage.setItem('token', res.data.token);
+      window.dispatchEvent(new Event('auth-change'));
       navigate('/events');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');

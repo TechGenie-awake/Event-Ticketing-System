@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -23,11 +24,25 @@ function getUserRole() {
 }
 
 function App() {
-  const token = localStorage.getItem('token');
-  const role = getUserRole();
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [role, setRole] = useState(() => getUserRole());
+
+  useEffect(() => {
+    const syncAuth = () => {
+      setToken(localStorage.getItem('token'));
+      setRole(getUserRole());
+    };
+    window.addEventListener('auth-change', syncAuth);
+    window.addEventListener('storage', syncAuth);
+    return () => {
+      window.removeEventListener('auth-change', syncAuth);
+      window.removeEventListener('storage', syncAuth);
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    window.dispatchEvent(new Event('auth-change'));
     window.location.href = '/';
   };
 
