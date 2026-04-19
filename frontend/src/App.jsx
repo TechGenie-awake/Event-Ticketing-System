@@ -9,6 +9,7 @@ import MyTicketsPage from './pages/MyTicketsPage';
 import TicketViewPage from './pages/TicketViewPage';
 import AdminPage from './pages/AdminPage';
 import EventDetailsPage from './pages/EventDetailsPage';
+import ProfilePage from './pages/ProfilePage';
 
 function getUserRole() {
   const token = localStorage.getItem('token');
@@ -56,6 +57,7 @@ function App() {
             <>
               <Link to="/my-bookings" style={{ color: '#a3a3a3', fontSize: '0.85rem', fontWeight: '500' }}>Bookings</Link>
               <Link to="/my-tickets" style={{ color: '#a3a3a3', fontSize: '0.85rem', fontWeight: '500' }}>Tickets</Link>
+              <Link to="/profile" style={{ color: '#a3a3a3', fontSize: '0.85rem', fontWeight: '500' }}>Profile</Link>
               {role === 'ADMIN' && <Link to="/admin" style={{ color: '#6366f1', fontSize: '0.85rem', fontWeight: '600' }}>Admin</Link>}
               <button onClick={handleLogout} style={{
                 background: 'transparent',
@@ -89,6 +91,7 @@ function App() {
         <Route path="/my-tickets" element={<MyTicketsPage />} />
         <Route path="/ticket/:id" element={<TicketViewPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </div>
   );
