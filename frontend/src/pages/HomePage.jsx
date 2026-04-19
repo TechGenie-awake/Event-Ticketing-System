@@ -80,31 +80,42 @@ function HomePage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
             {events.map((event) => (
-              <Link to={`/booking/${event.id}`} key={event.id} style={{ textDecoration: 'none' }}>
+              <Link to={`/events/${event.id}`} key={event.id} style={{ textDecoration: 'none' }}>
                 <div style={{
                   background: '#141414', border: '1px solid #1f1f1f', borderRadius: '12px',
-                  padding: '1.5rem', transition: 'all 0.3s ease', cursor: 'pointer',
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
-                    <span style={{
-                      background: '#1e1b4b', color: '#818cf8', padding: '0.25rem 0.7rem',
-                      borderRadius: '20px', fontSize: '0.7rem', fontWeight: '600', textTransform: 'uppercase',
-                    }}>
-                      {event.category}
-                    </span>
-                    <span style={{ color: '#6366f1', fontWeight: '700', fontSize: '1.1rem' }}>
-                      ${event.minPrice}
-                    </span>
-                  </div>
-                  <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>{event.title}</h3>
-                  <p style={{ color: '#525252', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-                    {new Date(event.eventDate).toDateString()} • {event.eventTime}
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <p style={{ color: '#525252', fontSize: '0.8rem' }}>{event.venue}, {event.city}</p>
-                    <p style={{ color: event.availableSeats > 0 ? '#22c55e' : '#ef4444', fontSize: '0.8rem', fontWeight: '600' }}>
-                      {event.availableSeats > 0 ? `${event.availableSeats} left` : 'Sold Out'}
+                  overflow: 'hidden', transition: 'all 0.3s ease', cursor: 'pointer',
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2a2a2a'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#1f1f1f'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                >
+                  {event.imageUrl && (
+                    <div style={{ height: '160px', overflow: 'hidden', position: 'relative' }}>
+                      <img src={event.imageUrl} alt={event.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #141414 0%, transparent 60%)' }} />
+                    </div>
+                  )}
+                  <div style={{ padding: '1.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.75rem' }}>
+                      <span style={{
+                        background: '#1e1b4b', color: '#818cf8', padding: '0.25rem 0.7rem',
+                        borderRadius: '20px', fontSize: '0.7rem', fontWeight: '600', textTransform: 'uppercase',
+                      }}>
+                        {event.category}
+                      </span>
+                      <span style={{ color: '#6366f1', fontWeight: '700', fontSize: '1.1rem' }}>
+                        ${event.minPrice}
+                      </span>
+                    </div>
+                    <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>{event.title}</h3>
+                    <p style={{ color: '#525252', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                      {new Date(event.eventDate).toDateString()} • {event.eventTime}
                     </p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <p style={{ color: '#525252', fontSize: '0.8rem' }}>{event.venue}, {event.city}</p>
+                      <p style={{ color: event.availableSeats > 0 ? '#22c55e' : '#ef4444', fontSize: '0.8rem', fontWeight: '600' }}>
+                        {event.availableSeats > 0 ? `${event.availableSeats} left` : 'Sold Out'}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </Link>

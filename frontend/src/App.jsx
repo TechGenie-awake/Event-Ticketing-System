@@ -8,6 +8,7 @@ import MyBookingsPage from './pages/MyBookingsPage';
 import MyTicketsPage from './pages/MyTicketsPage';
 import TicketViewPage from './pages/TicketViewPage';
 import AdminPage from './pages/AdminPage';
+import EventDetailsPage from './pages/EventDetailsPage';
 
 function getUserRole() {
   const token = localStorage.getItem('token');
@@ -80,6 +81,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:id" element={<EventDetailsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/booking/:eventId" element={<BookingPage />} />

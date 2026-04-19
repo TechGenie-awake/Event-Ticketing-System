@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
+const CATEGORY_GRADIENTS = {
+  concert: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
+  sports: 'linear-gradient(135deg, #052e16 0%, #166534 100%)',
+  comedy: 'linear-gradient(135deg, #451a03 0%, #92400e 100%)',
+  theater: 'linear-gradient(135deg, #450a0a 0%, #991b1b 100%)',
+  other: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
+};
+
 function EventsPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,55 +65,71 @@ function EventsPage() {
       {error && <p style={{ color: '#ef4444' }}>{error}</p>}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
-        {events.map((event) => (
-          <div key={event.id} style={{
-            background: '#141414', border: '1px solid #1f1f1f', borderRadius: '12px',
-            padding: '1.5rem', transition: 'border-color 0.2s',
-          }}
-            onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2a2a2a'}
-            onMouseLeave={(e) => e.currentTarget.style.borderColor = '#1f1f1f'}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <span style={{
-                background: '#1e1b4b', color: '#818cf8', padding: '0.2rem 0.65rem',
-                borderRadius: '20px', fontSize: '0.7rem', fontWeight: '600', textTransform: 'uppercase',
-              }}>
-                {event.category}
-              </span>
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ color: '#fff', fontWeight: '700', fontSize: '1.1rem' }}>
-                  ${event.minPrice}
-                  {event.minPrice !== event.maxPrice && <span style={{ color: '#525252', fontSize: '0.75rem', fontWeight: '400' }}> - ${event.maxPrice}</span>}
-                </p>
+        {events.map((event) => {
+          const gradient = CATEGORY_GRADIENTS[event.category] || CATEGORY_GRADIENTS.other;
+          return (
+            <Link to={`/events/${event.id}`} key={event.id} style={{ textDecoration: 'none' }}>
+              <div style={{
+                background: '#141414', border: '1px solid #1f1f1f', borderRadius: '12px',
+                overflow: 'hidden', transition: 'border-color 0.2s, transform 0.2s', cursor: 'pointer',
+              }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#2a2a2a'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#1f1f1f'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                {/* Card Image */}
+                <div style={{
+                  height: '180px', position: 'relative', overflow: 'hidden',
+                  background: event.imageUrl ? 'none' : gradient,
+                }}>
+                  {event.imageUrl && (
+                    <img src={event.imageUrl} alt={event.title} style={{
+                      width: '100%', height: '100%', objectFit: 'cover',
+                    }} />
+                  )}
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(to top, #141414 0%, rgba(20,20,20,0.4) 50%, transparent 100%)',
+                  }} />
+                  <span style={{
+                    position: 'absolute', top: '0.75rem', left: '0.75rem',
+                    background: 'rgba(30,27,75,0.85)', backdropFilter: 'blur(4px)',
+                    color: '#818cf8', padding: '0.25rem 0.7rem',
+                    borderRadius: '20px', fontSize: '0.65rem', fontWeight: '600', textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
+                    {event.category}
+                  </span>
+                </div>
+
+                <div style={{ padding: '1.25rem' }}>
+                  <h3 style={{ color: '#fff', fontSize: '1.15rem', fontWeight: '700', marginBottom: '0.5rem' }}>{event.title}</h3>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#525252', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                    <span>📅</span>
+                    <span>{new Date(event.eventDate).toDateString()} • {event.eventTime}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#525252', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                    <span>📍</span>
+                    <span>{event.venue}, {event.city}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid #1f1f1f' }}>
+                    <p style={{
+                      fontSize: '0.8rem', fontWeight: '600',
+                      color: event.availableSeats > 10 ? '#22c55e' : event.availableSeats > 0 ? '#f59e0b' : '#ef4444',
+                    }}>
+                      {event.availableSeats > 0 ? `${event.availableSeats} seats available` : 'Sold Out'}
+                    </p>
+                    <p style={{ color: '#fff', fontWeight: '700', fontSize: '1.1rem' }}>
+                      ${event.minPrice}
+                      {event.minPrice !== event.maxPrice && <span style={{ color: '#525252', fontSize: '0.75rem', fontWeight: '400' }}> - ${event.maxPrice}</span>}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <h3 style={{ color: '#fff', fontSize: '1.15rem', fontWeight: '700', marginBottom: '0.5rem' }}>{event.title}</h3>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#525252', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
-              <span>📅</span>
-              <span>{new Date(event.eventDate).toDateString()} • {event.eventTime}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#525252', fontSize: '0.85rem', marginBottom: '1rem' }}>
-              <span>📍</span>
-              <span>{event.venue}, {event.city}</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid #1f1f1f' }}>
-              <p style={{
-                fontSize: '0.8rem', fontWeight: '600',
-                color: event.availableSeats > 10 ? '#22c55e' : event.availableSeats > 0 ? '#f59e0b' : '#ef4444',
-              }}>
-                {event.availableSeats > 0 ? `${event.availableSeats} seats available` : 'Sold Out'}
-              </p>
-              <Link to={`/booking/${event.id}`}>
-                <button disabled={event.availableSeats === 0} style={{ padding: '0.45rem 1.2rem', fontSize: '0.8rem' }}>
-                  Book Now
-                </button>
-              </Link>
-            </div>
-          </div>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       {!loading && events.length === 0 && (
