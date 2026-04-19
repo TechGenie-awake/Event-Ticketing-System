@@ -5,6 +5,7 @@ function AdminPage() {
   const [eventForm, setEventForm] = useState({
     title: '', description: '', eventDate: '', eventTime: '',
     venue: '', city: '', category: 'concert', minPrice: '', maxPrice: '',
+    imageUrl: '',
   });
   const [createdEvent, setCreatedEvent] = useState(null);
   const [seatSections, setSeatSections] = useState([
@@ -89,6 +90,15 @@ function AdminPage() {
         <div style={{ marginBottom: '0.75rem' }}>
           <label style={{ display: 'block', color: '#525252', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.35rem' }}>Description</label>
           <textarea name="description" value={eventForm.description} onChange={handleEventChange} required placeholder="Event description" style={{ height: '80px', resize: 'vertical' }} />
+        </div>
+        <div style={{ marginBottom: '0.75rem' }}>
+          <label style={{ display: 'block', color: '#525252', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.35rem' }}>Image URL (optional)</label>
+          <input name="imageUrl" value={eventForm.imageUrl} onChange={handleEventChange} placeholder="https://images.unsplash.com/..." />
+          {eventForm.imageUrl && (
+            <div style={{ marginTop: '0.5rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid #1f1f1f', maxWidth: '280px' }}>
+              <img src={eventForm.imageUrl} alt="Preview" style={{ width: '100%', height: '120px', objectFit: 'cover', display: 'block' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            </div>
+          )}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
           <div>
