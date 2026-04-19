@@ -39,6 +39,7 @@ cp .env.example .env   # fill in your NeonDB URL and JWT secret
 npm install
 npx prisma generate
 npx prisma migrate dev
+npx prisma db seed     # seeds test users + 4 sample events
 npm run dev
 
 # Frontend
@@ -46,3 +47,12 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Test Login
+
+After running the seed, you can log in with:
+
+| Role  | Email            | Password   |
+|-------|------------------|------------|
+| Admin | admin@test.com   | admin123   |
+| User  | user@test.com    | user123    |
