@@ -121,8 +121,8 @@ function EventsPage() {
                       {event.availableSeats > 0 ? `${event.availableSeats} seats available` : 'Sold Out'}
                     </p>
                     <p style={{ color: '#fff', fontWeight: '700', fontSize: '1.1rem' }}>
-                      ${event.minPrice}
-                      {event.minPrice !== event.maxPrice && <span style={{ color: '#525252', fontSize: '0.75rem', fontWeight: '400' }}> - ${event.maxPrice}</span>}
+                      ₹{event.minPrice}
+                      {event.minPrice !== event.maxPrice && <span style={{ color: '#525252', fontSize: '0.75rem', fontWeight: '400' }}> - ₹{event.maxPrice}</span>}
                     </p>
                   </div>
                 </div>

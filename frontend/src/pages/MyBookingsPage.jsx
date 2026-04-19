@@ -79,7 +79,7 @@ function MyBookingsPage() {
                   </div>
                   <div>
                     <p style={{ color: '#404040', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Amount</p>
-                    <p style={{ color: '#e5e5e5', fontWeight: '600', fontSize: '0.9rem' }}>${booking.totalAmount}</p>
+                    <p style={{ color: '#e5e5e5', fontWeight: '600', fontSize: '0.9rem' }}>₹{booking.totalAmount}</p>
                   </div>
                   <div>
                     <p style={{ color: '#404040', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reference</p>

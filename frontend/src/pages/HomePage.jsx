@@ -103,7 +103,7 @@ function HomePage() {
                         {event.category}
                       </span>
                       <span style={{ color: '#6366f1', fontWeight: '700', fontSize: '1.1rem' }}>
-                        ${event.minPrice}
+                        ₹{event.minPrice}
                       </span>
                     </div>
                     <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>{event.title}</h3>

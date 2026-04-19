@@ -119,11 +119,11 @@ function AdminPage() {
           </div>
           <div />
           <div>
-            <label style={{ display: 'block', color: '#525252', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.35rem' }}>Min Price ($)</label>
+            <label style={{ display: 'block', color: '#525252', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.35rem' }}>Min Price (₹)</label>
             <input name="minPrice" type="number" value={eventForm.minPrice} onChange={handleEventChange} required placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', color: '#525252', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.35rem' }}>Max Price ($)</label>
+            <label style={{ display: 'block', color: '#525252', fontSize: '0.8rem', fontWeight: '500', marginBottom: '0.35rem' }}>Max Price (₹)</label>
             <input name="maxPrice" type="number" value={eventForm.maxPrice} onChange={handleEventChange} required placeholder="0" />
           </div>
         </div>
@@ -156,7 +156,7 @@ function AdminPage() {
                 <input type="number" value={section.seatsPerRow} onChange={(e) => handleSectionChange(i, 'seatsPerRow', e.target.value)} />
               </div>
               <div>
-                {i === 0 && <label style={{ display: 'block', color: '#404040', fontSize: '0.7rem', marginBottom: '0.25rem' }}>Price ($)</label>}
+                {i === 0 && <label style={{ display: 'block', color: '#404040', fontSize: '0.7rem', marginBottom: '0.25rem' }}>Price (₹)</label>}
                 <input type="number" placeholder="0" value={section.price} onChange={(e) => handleSectionChange(i, 'price', e.target.value)} />
               </div>
               <button onClick={() => removeSection(i)} style={{ background: '#7f1d1d', padding: '0.55rem 0.75rem', fontSize: '0.75rem', marginBottom: '1px' }}>✕</button>

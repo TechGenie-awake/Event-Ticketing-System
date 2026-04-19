@@ -117,7 +117,7 @@ function EventDetailsPage() {
                         padding: '1.25rem', flex: '1', minWidth: '150px',
                       }}>
                         <p style={{ color: '#6366f1', fontSize: '0.7rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{section}</p>
-                        <p style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.25rem' }}>${price}</p>
+                        <p style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.25rem' }}>₹{price}</p>
                         <p style={{
                           fontSize: '0.8rem', fontWeight: '500',
                           color: available > 5 ? '#22c55e' : available > 0 ? '#f59e0b' : '#ef4444',
@@ -140,9 +140,9 @@ function EventDetailsPage() {
             }}>
               <p style={{ color: '#404040', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>STARTING FROM</p>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                <span style={{ color: '#fff', fontSize: '2.5rem', fontWeight: '900' }}>${event.minPrice}</span>
+                <span style={{ color: '#fff', fontSize: '2.5rem', fontWeight: '900' }}>₹{event.minPrice}</span>
                 {event.minPrice !== event.maxPrice && (
-                  <span style={{ color: '#525252', fontSize: '0.9rem' }}>— ${event.maxPrice}</span>
+                  <span style={{ color: '#525252', fontSize: '0.9rem' }}>— ₹{event.maxPrice}</span>
                 )}
               </div>
               <p style={{ color: '#525252', fontSize: '0.8rem', marginBottom: '1.5rem' }}>per ticket</p>

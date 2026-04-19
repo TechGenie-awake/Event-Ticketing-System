@@ -16,14 +16,16 @@ const SEAT_BORDERS = {
   SELECTED: '#6366f1',
 };
 
+const MAX_SEATS = 8;
+
 function BookingPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [seats, setSeats] = useState([]);
-  const [selectedSeat, setSelectedSeat] = useState(null);
+  const [selectedSeats, setSelectedSeats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [booking, setBooking] = useState(null);
+  const [bookings, setBookings] = useState(null);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -37,20 +39,42 @@ function BookingPage() {
       .finally(() => setLoading(false));
   }, [eventId]);
 
+  const isSelected = (seatId) => selectedSeats.some((s) => s.id === seatId);
+
   const handleSeatClick = (seat) => {
     if (seat.status !== 'AVAILABLE') return;
-    setSelectedSeat(selectedSeat?.id === seat.id ? null : seat);
+    if (isSelected(seat.id)) {
+      setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id));
+    } else {
+      if (selectedSeats.length >= MAX_SEATS) {
+        setError(`You can select up to ${MAX_SEATS} seats at a time.`);
+        return;
+      }
+      setError('');
+      setSelectedSeats([...selectedSeats, seat]);
+    }
   };
 
+  const totalPrice = selectedSeats.reduce((sum, s) => sum + s.price, 0);
+
   const handleBooking = async () => {
-    if (!selectedSeat) return;
+    if (selectedSeats.length === 0) return;
     setSubmitting(true);
     setError('');
+    const created = [];
     try {
-      const res = await api.post('/bookings', { eventId, seatId: selectedSeat.id });
-      setBooking(res.data.booking);
+      for (const seat of selectedSeats) {
+        const res = await api.post('/bookings', { eventId, seatId: seat.id });
+        created.push(res.data.booking);
+      }
+      setBookings(created);
     } catch (err) {
-      setError(err.response?.data?.message || 'Booking failed. Please try again.');
+      setError(
+        created.length > 0
+          ? `Booked ${created.length} of ${selectedSeats.length} seats. ${err.response?.data?.message || 'Remaining seats failed.'}`
+          : err.response?.data?.message || 'Booking failed. Please try again.'
+      );
+      if (created.length > 0) setBookings(created);
     } finally {
       setSubmitting(false);
     }
@@ -59,20 +83,27 @@ function BookingPage() {
   if (loading) return <p style={{ padding: '3rem', color: '#525252' }}>Loading...</p>;
   if (error && !event) return <p style={{ padding: '3rem', color: '#ef4444' }}>{error}</p>;
 
-  if (booking) {
+  if (bookings && bookings.length > 0) {
     return (
-      <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
         <div style={{
-          maxWidth: '450px', padding: '3rem', textAlign: 'center',
+          maxWidth: '480px', width: '100%', padding: '2.5rem', textAlign: 'center',
           background: '#141414', borderRadius: '16px', border: '1px solid #1f1f1f',
         }}>
           <div style={{ width: '56px', height: '56px', background: '#1a2e1a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '1.5rem' }}>✓</div>
-          <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.5rem' }}>Booking Created</h2>
+          <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+            {bookings.length === 1 ? 'Booking Created' : `${bookings.length} Bookings Created`}
+          </h2>
           <p style={{ color: '#525252', marginBottom: '1.5rem' }}>Complete payment within 30 minutes to confirm.</p>
-          <div style={{ background: '#0a0a0a', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #1f1f1f' }}>
-            <p style={{ color: '#737373', fontSize: '0.8rem', marginBottom: '0.25rem' }}>Booking Reference</p>
-            <p style={{ color: '#fff', fontWeight: '700', fontSize: '1.1rem', fontFamily: 'monospace' }}>{booking.bookingReference}</p>
+          <div style={{ background: '#0a0a0a', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', border: '1px solid #1f1f1f', textAlign: 'left' }}>
+            {bookings.map((b) => (
+              <div key={b.id} style={{ padding: '0.35rem 0', borderBottom: '1px solid #1a1a1a' }}>
+                <p style={{ color: '#525252', fontSize: '0.7rem' }}>Booking Reference</p>
+                <p style={{ color: '#fff', fontWeight: '600', fontSize: '0.85rem', fontFamily: 'monospace' }}>{b.bookingReference}</p>
+              </div>
+            ))}
           </div>
+          {error && <p style={{ color: '#f87171', fontSize: '0.85rem', marginBottom: '1rem' }}>{error}</p>}
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button onClick={() => navigate('/my-bookings')} style={{ flex: 1, padding: '0.65rem' }}>My Bookings</button>
             <button onClick={() => navigate('/events')} style={{ flex: 1, padding: '0.65rem', background: '#1f1f1f', color: '#a3a3a3' }}>Back to Events</button>
@@ -85,14 +116,17 @@ function BookingPage() {
   const rows = [...new Set(seats.map((s) => s.row))].sort();
 
   return (
-    <div style={{ padding: '3rem', maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ padding: '3rem', maxWidth: '900px', margin: '0 auto', paddingBottom: '8rem' }}>
       {event && (
         <>
           <div style={{ marginBottom: '2rem' }}>
-            <p style={{ color: '#6366f1', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>SELECT YOUR SEAT</p>
+            <p style={{ color: '#6366f1', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>SELECT YOUR SEATS</p>
             <h1 style={{ color: '#fff', fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.5px', marginBottom: '0.5rem' }}>{event.title}</h1>
             <p style={{ color: '#525252', fontSize: '0.9rem' }}>
               {new Date(event.eventDate).toDateString()} • {event.eventTime} • {event.venue}, {event.city}
+            </p>
+            <p style={{ color: '#6366f1', fontSize: '0.8rem', marginTop: '0.5rem' }}>
+              Tap seats to add or remove — up to {MAX_SEATS} per booking.
             </p>
           </div>
 
@@ -115,13 +149,13 @@ function BookingPage() {
                   .filter((s) => s.row === row)
                   .sort((a, b) => a.number - b.number)
                   .map((seat) => {
-                    const isSelected = selectedSeat?.id === seat.id;
-                    const status = isSelected ? 'SELECTED' : seat.status;
+                    const selected = isSelected(seat.id);
+                    const status = selected ? 'SELECTED' : seat.status;
                     return (
                       <div
                         key={seat.id}
                         onClick={() => handleSeatClick(seat)}
-                        title={`${seat.row}${seat.number} • ${seat.section} • $${seat.price}`}
+                        title={`${seat.row}${seat.number} • ${seat.section} • ₹${seat.price}`}
                         style={{
                           width: '38px', height: '34px',
                           background: SEAT_COLORS[status],
@@ -130,7 +164,7 @@ function BookingPage() {
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           cursor: seat.status === 'AVAILABLE' ? 'pointer' : 'not-allowed',
                           fontSize: '0.65rem', fontWeight: '600',
-                          color: isSelected ? '#818cf8' : seat.status === 'AVAILABLE' ? '#4ade80' : '#404040',
+                          color: selected ? '#818cf8' : seat.status === 'AVAILABLE' ? '#4ade80' : '#404040',
                           transition: 'all 0.15s ease',
                         }}
                       >
@@ -159,27 +193,44 @@ function BookingPage() {
 
           {error && <p style={{ color: '#ef4444', textAlign: 'center', marginTop: '1rem' }}>{error}</p>}
 
-          {/* Selection Panel */}
-          {selectedSeat && (
+          {/* Selection Panel - sticky bottom bar */}
+          {selectedSeats.length > 0 && (
             <div style={{
-              marginTop: '2rem', padding: '1.25rem', background: '#141414',
-              borderRadius: '12px', border: '1px solid #312e81',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              position: 'fixed', bottom: 0, left: 0, right: 0,
+              background: 'rgba(20,20,20,0.98)', backdropFilter: 'blur(12px)',
+              borderTop: '1px solid #312e81',
+              padding: '1.25rem 2rem',
+              display: 'flex', justifyContent: 'center',
+              zIndex: 50,
             }}>
-              <div>
-                <p style={{ color: '#818cf8', fontSize: '0.7rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.3rem' }}>SELECTED SEAT</p>
-                <p style={{ color: '#fff', fontSize: '1.1rem', fontWeight: '700' }}>
-                  {selectedSeat.row}{selectedSeat.number}
-                  <span style={{ color: '#525252', fontWeight: '400', fontSize: '0.85rem', marginLeft: '0.75rem' }}>
-                    {selectedSeat.section} Section
-                  </span>
-                </p>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                <p style={{ color: '#fff', fontSize: '1.3rem', fontWeight: '800' }}>${selectedSeat.price}</p>
-                <button onClick={handleBooking} disabled={submitting} style={{ padding: '0.65rem 1.75rem', fontSize: '0.9rem', fontWeight: '600' }}>
-                  {submitting ? 'Booking...' : 'Book Now'}
-                </button>
+              <div style={{
+                maxWidth: '900px', width: '100%',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap',
+              }}>
+                <div style={{ flex: '1 1 auto', minWidth: '200px' }}>
+                  <p style={{ color: '#818cf8', fontSize: '0.7rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                    {selectedSeats.length} SEAT{selectedSeats.length !== 1 ? 'S' : ''} SELECTED
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                    {selectedSeats.map((s) => (
+                      <span key={s.id} style={{
+                        background: '#1e1b4b', color: '#a5b4fc', padding: '0.25rem 0.6rem',
+                        borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600',
+                      }}>
+                        {s.row}{s.number} <span style={{ color: '#6366f1' }}>· ₹{s.price}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ color: '#525252', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Total</p>
+                    <p style={{ color: '#fff', fontSize: '1.4rem', fontWeight: '800' }}>₹{totalPrice}</p>
+                  </div>
+                  <button onClick={handleBooking} disabled={submitting} style={{ padding: '0.75rem 1.75rem', fontSize: '0.9rem', fontWeight: '600' }}>
+                    {submitting ? 'Booking...' : `Book ${selectedSeats.length} Seat${selectedSeats.length !== 1 ? 's' : ''}`}
+                  </button>
+                </div>
               </div>
             </div>
           )}
